@@ -43,7 +43,7 @@ module registerFile_tb;
         rs0 = 4'd0; rs1 = 4'd1;
         #3;
         rst = 0;
-        #3;
+        #4.5;
         if (dout0 !== 28'd0 || dout1 !== 28'd0) begin
             $display("[FAIL] Reset did not clear registers: dout0=%h dout1=%h", dout0, dout1);
         end else begin

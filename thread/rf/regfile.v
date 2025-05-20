@@ -10,19 +10,21 @@ module registerFile
     output wire [27:0] dout0,
     output wire [27:0] dout1
 );
-    reg [27:0] rf [0:15];
+    // Register file with 16 registers (28 bits each)
+    reg [27:0] rf [1:15];  // Only registers 1-15 are stored
     integer i;
 
-    assign dout0 = rf[rs0];
-    assign dout1 = rf[rs1];
+    // Register 0 is hardwired to zero
+    assign dout0 = (rs0 == 4'b0) ? 28'b0 : rf[rs0];
+    assign dout1 = (rs1 == 4'b0) ? 28'b0 : rf[rs1];
 
     always @(negedge clk or posedge rst) begin
         if (rst) begin
-            for (i = 0; i < 16; i = i + 1) begin
+            for (i = 1; i < 16; i = i + 1) begin
                 rf[i] <= 28'b0;
             end
         end else if (wen) begin
-            rf[dest_sel] <= (|dest_sel)? data_in : 28'b0;
+            rf[dest_sel] <= data_in;
         end
     end
 endmodule
