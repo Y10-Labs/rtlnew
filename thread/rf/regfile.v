@@ -21,8 +21,9 @@ module registerFile
             for (i = 0; i < 16; i = i + 1) begin
                 rf[i] <= 28'b0;
             end
-        end else if (wen) begin
-            rf[dest_sel] <= data_in;
+        end else begin
+            rf[0] <= 28'b0;
+            if (wen) rf[dest_sel] <= data_in;
         end
     end
 endmodule
