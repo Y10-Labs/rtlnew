@@ -9,8 +9,8 @@ module registerFile
     input wire isrdSIMD,
     input wire iswrSIMD,
     input wire wen,
-    output wire [27:0] dout0,
-    output wire [27:0] dout1
+    output wire [55:0] dout0,
+    output wire [55:0] dout1
 );
 
     (* dont_touch = "yes" *) reg [27:0] rf [0:15]; 
