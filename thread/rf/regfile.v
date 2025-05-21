@@ -4,13 +4,15 @@ module registerFile
     input wire rst,
     input wire [3:0] rs0,
     input wire [3:0] rs1,
-    input wire [27:0] data_in,
+    input wire [55:0] data_in,
     input wire [3:0] dest_sel,
+    input wire isSIMD,
     input wire wen,
     output wire [27:0] dout0,
     output wire [27:0] dout1
 );
-    reg [27:0] rf [0:15]; 
+
+    (* dont_touch = "yes" *) reg [27:0] rf [1:15]; 
     integer i;
 
     assign dout0 = rf[rs0];
@@ -22,7 +24,6 @@ module registerFile
                 rf[i] <= 28'b0;
             end
         end else begin
-            rf[0] <= 28'b0;
             if (wen) rf[dest_sel] <= data_in;
         end
     end
