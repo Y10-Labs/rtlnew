@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Gen Vectors",
+            "type": "shell",
+            "command": "python3 gen_vectors.py",
+            "group": "build"
+        },
+        {
+            "label": "Compile & Simulate",
+            "type": "shell",
+            "command": "iverilog -g2012 -o tb_lambdagen.vvp tb_lambdagen.sv lambdagen.v div.v lambdagen_s*.v ; vvp tb_lambdagen.vvp",
+            "dependsOn": ["Gen Vectors"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Waveform",
+            "type": "shell",
+            "command": "gtkwave waveform.vcd",
+            "group": "test"
+        }
+    ]
+}

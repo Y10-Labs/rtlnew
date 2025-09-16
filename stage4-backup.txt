@@ -1,0 +1,90 @@
+module lambdagen_s4 #(
+    parameter ZWIDTH = 16,
+    parameter XWIDTH = 9,
+    parameter YWIDTH = 8,
+    parameter IDWIDTH = 16,
+    parameter LWIDTH = 32
+)
+(
+    input clk, rst,
+    input signed [31:0] E1_s3, E2_s3, area_s3,
+    input signed [ZWIDTH-1:0] z1_s3, z2_s3, z3_s3,
+    input [IDWIDTH-1:0] tID_s3,
+    input signed [XWIDTH:0] dl1x_s3, dl2x_s3,
+    input signed [YWIDTH:0] dl1y_s3, dl2y_s3,
+    input valid,
+    input stall,
+
+    output reg signed [31:0] l1_s4, l2_s4, dl1x_s4, dl2x_s4, dl1y_s4, dl2y_s4,
+    output reg signed [ZWIDTH-1:0] z1_s4, z2_s4, z3_s4,
+    output reg [IDWIDTH-1:0] tID_s4,
+    output reg ovalid
+);
+
+    // Local wires for computed quotients
+    wire signed [31:0] quo1, quo2, quo3, quo4, quo5, quo6;
+    
+    assign quo1 = (area_s3 != 0) ? (E1_s3 <<< 8) / area_s3 : 0;  // l1
+    assign quo2 = (area_s3 != 0) ? (E2_s3 <<< 8) / area_s3 : 0;  // l2
+
+    wire signed [31:0] dl1x_ext ;  
+    wire signed [31:0] dl2x_ext ;
+    wire signed [31:0] dl1y_ext ;
+    wire signed [31:0] dl2y_ext ;
+
+    assign dl1x_ext = $signed(dl1x_s3);
+    assign dl2x_ext = $signed(dl2x_s3);
+    assign dl1y_ext = $signed(dl1y_s3);
+    assign dl2y_ext = $signed(dl2y_s3);
+
+    assign quo3 = (area_s3 != 0) ? (dl1x_ext <<< 8) / area_s3 : 0; // dlambda2x
+    assign quo4 = (area_s3 != 0) ? (dl2x_ext <<< 8) / area_s3 : 0; // dlambda1x
+    assign quo5 = (area_s3 != 0) ? (dl1y_ext <<< 8) / area_s3 : 0;// dlambda2y
+    assign quo6 = (area_s3 != 0) ? (dl2y_ext <<< 8) / area_s3 : 0;// dlambda1y
+
+    always @ (posedge clk) begin
+        if (rst) begin
+            l1_s4   <= 0;
+            l2_s4   <= 0;
+            dl1x_s4 <= 0;
+            dl2x_s4 <= 0;
+            dl1y_s4 <= 0;
+            dl2y_s4 <= 0;
+            ovalid  <= 0;
+            tID_s4  <= 0;
+            z1_s4    <= 0;
+            z2_s4    <= 0;
+            z3_s4    <= 0;
+        end
+        else if (valid) begin
+            l1_s4   <= quo1;
+            l2_s4   <= quo2;
+            dl1x_s4 <= quo4;
+            dl2x_s4 <= quo3;
+            dl1y_s4 <= quo6;
+            dl2y_s4 <= quo5;
+            tID_s4  <= tID_s3;
+            z1_s4    <= z1_s3;
+            z2_s4    <= z2_s3;
+            z3_s4    <= z3_s3;
+            ovalid  <= 1;
+        end
+        else if (stall) begin
+            l1_s4   <= l1_s4;
+            l2_s4   <= l2_s4;
+            dl1x_s4 <= dl1x_s4;
+            dl2x_s4 <= dl2x_s4;
+            dl1y_s4 <= dl1y_s4;
+            dl2y_s4 <= dl2y_s4;
+            tID_s4  <= tID_s4;
+            z1_s4    <= z1_s4;
+            z2_s4    <= z2_s4;
+            z3_s4    <= z3_s4;
+            ovalid  <= 1;
+        end
+        else begin
+            ovalid <= 0;
+        end
+    end
+
+endmodule
